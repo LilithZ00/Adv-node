@@ -27,7 +27,7 @@ router.get("/joinUser", (req, res) => {
   });
 });
 router.get("/score10", (req, res) => {
-  const sql = "SELECT * FROM character_post INNER JOIN character_user ON character_post.user_id = character_user.user_id ORDER BY score DESC LIMIT 10;";
+  const sql = "SELECT * FROM character_post INNER JOIN character_user ON character_post.user_id = character_user.user_id ORDER BY score DESC LIMIT 20;";
   conn.query(sql, (err, result) => {
     res.status(200);
     res.json(result);
@@ -49,6 +49,18 @@ router.get("/:id", (req, res) => {
     res.json(result);
   });
 });
+
+//Grap
+router.get("/grap/:id", (req, res) => {
+  const id = req.params.id;
+  const sql = "SELECT post_id,score_sum,DATE_FORMAT(date, '%Y-%m-%d') AS date FROM character_vote WHERE date BETWEEN DATE_SUB(CURDATE(), INTERVAL 6 DAY) AND CURDATE() AND post_id = ? GROUP BY DATE_FORMAT(date, '%Y-%m-%d'), score_sum ORDER BY DATE_FORMAT(date, '%Y-%m-%d');";
+  conn.query(sql, [id], (err, result) => {
+    res.status(200);
+    res.json(result);
+  });
+});
+
+
 
 //insert
 router.post("/insert_post", (req, res) => {

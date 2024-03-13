@@ -13,8 +13,18 @@ router.get("/", (req, res) => {
   });
 });
 
+// get date 7
+//SELECT * FROM your_table WHERE your_date_column >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
+router.get("/date", (req, res) => {
+  const sql = "SELECT date FROM character_vote where date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)";
+  conn.query(sql, (err, result) => {
+    res.status(200);
+    res.json(result);
+  });
+});
+
 router.get("/join", (req, res) => {
-  const sql = "SELECT * FROM character_vote INNER JOIN character_user on character_user.user_id = character_vote.user_id INNER JOIN character_post on character_post.post_id = character_vote.post_id";
+  const sql = "SELECT * FROM character_vote INNER JOIN character_user on character_user.user_id = character_vote.user_id INNER JOIN character_post on character_post.post_id = character_vote.post_id ORDER BY vote_id";
   conn.query(sql, (err, result) => {
     res.status(200);
     res.json(result);
@@ -24,8 +34,19 @@ router.get("/join", (req, res) => {
 router.get("/:id", (req, res) => {
   const id = req.params.id;
   const sql = 
-  "SELECT * FROM character_vote INNER JOIN character_user on character_user.user_id = character_vote.user_id INNER JOIN character_post on character_post.post_id = character_vote.post_id where vote_id";
+  `SELECT * FROM character_vote INNER JOIN character_user on character_user.user_id = character_vote.user_id INNER JOIN character_post on character_post.post_id = character_vote.post_id where vote_id = ${id}`;
   conn.query(sql, [id], (err, result) => {
+    res.status(200);
+    res.json(result);
+  });
+});
+
+//date
+router.get("/date/:date", (req, res) => {
+  const date = req.params.date;
+  const sql = 
+  'SELECT * FROM character_vote WHERE DATE(date) = ?';
+  conn.query(sql, [date], (err, result) => {
     res.status(200);
     res.json(result);
   });
