@@ -43,6 +43,14 @@ router.get("/score10", (req, res) => {
   });
 });
 
+router.get("/scoreCheck", (req, res) => {
+  const sql = "( SELECT post_id, MAX(score_sum) AS max_score_sum, DATE_FORMAT(date, '%Y-%m-%d') AS date FROM character_vote WHERE date = CURDATE() GROUP BY post_id, DATE_FORMAT(date, '%Y-%m-%d') ORDER BY max_score_sum DESC LIMIT 10 ) UNION ( SELECT post_id, MAX(score_sum) AS max_score_sum, DATE_FORMAT(date, '%Y-%m-%d') AS date FROM character_vote WHERE date = DATE_SUB(CURDATE(), INTERVAL 1 DAY) GROUP BY post_id, DATE_FORMAT(date, '%Y-%m-%d') ORDER BY max_score_sum DESC LIMIT 10 )";
+  conn.query(sql, (err, result) => {
+    res.status(200);
+    res.json(result);
+  });
+});
+
 
 // SELECT * 
 // FROM character_post
