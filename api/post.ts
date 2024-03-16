@@ -44,7 +44,7 @@ router.get("/score10", (req, res) => {
 });
 
 router.get("/scoreCheck", (req, res) => {
-  const sql = "( SELECT * FROM character_vote INNER JOIN character_post ON character_vote.post_id = character_post.post_id WHERE DATE(character_vote.date) = CURDATE() ORDER BY character_vote.score_sum DESC LIMIT 10 ) UNION ( SELECT * FROM character_vote INNER JOIN character_post ON character_vote.post_id = character_post.post_id WHERE DATE(character_vote.date) = DATE_SUB(CURDATE(), INTERVAL 1 DAY) ORDER BY character_vote.score_sum DESC LIMIT 10 )";
+  const sql = "(SELECT character_vote.*, character_post.* FROM character_vote INNER JOIN character_post ON character_vote.post_id = character_post.post_id INNER JOIN ( SELECT post_id, MAX(vote_id) AS latest_vote_id FROM character_vote WHERE DATE(character_vote.date) = CURDATE() GROUP BY post_id ) AS latest_votes ON character_vote.post_id = latest_votes.post_id AND character_vote.vote_id = latest_votes.latest_vote_id ORDER BY character_vote.score_sum DESC LIMIT 10) UNION (SELECT character_vote.*, character_post.* FROM character_vote INNER JOIN character_post ON character_vote.post_id = character_post.post_id INNER JOIN ( SELECT post_id, MAX(vote_id) AS latest_vote_id FROM character_vote WHERE DATE(character_vote.date) = DATE_SUB(CURDATE(), INTERVAL 1 DAY) GROUP BY post_id ) AS latest_votes ON character_vote.post_id = latest_votes.post_id AND character_vote.vote_id = latest_votes.latest_vote_id ORDER BY character_vote.score_sum DESC LIMIT 10)";
   conn.query(sql, (err, result) => {
     res.status(200);
     res.json(result);
