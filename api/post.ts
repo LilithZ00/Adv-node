@@ -36,7 +36,7 @@ router.get("/joinUser", (req, res) => {
 // });
 
 router.get("/score10", (req, res) => {
-  const sql = "SELECT *, RANK() OVER (ORDER BY score DESC) AS ranking FROM character_post  ORDER BY score DESC LIMIT 10";
+  const sql = "SELECT *, RANK() OVER (ORDER BY score DESC) AS ranking FROM character_post INNER JOIN character_user ON character_post.user_id = character_user.user_id ORDER BY score DESC LIMIT 10";
   conn.query(sql, (err, result) => {
     res.status(200);
     res.json(result);
