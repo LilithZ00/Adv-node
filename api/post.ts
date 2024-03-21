@@ -78,12 +78,29 @@ router.get("/:id", (req, res) => {
 //Grap
 router.get("/grap/:id", (req, res) => {
   const id = req.params.id;
-  const sql = "SELECT cv1.vote_id as vote, cv1.post_id, cv1.score_sum, DATE_FORMAT(cv1.date, '%Y-%m-%d') AS date FROM character_vote cv1 JOIN ( SELECT MAX(vote_id) AS max_vote_id, DATE_FORMAT(date, '%Y-%m-%d') AS date FROM character_vote WHERE date BETWEEN DATE_SUB(CURDATE(), INTERVAL 6 DAY) AND CURDATE() AND post_id = ? GROUP BY DATE_FORMAT(date, '%Y-%m-%d') ) cv2 ON cv1.vote_id = cv2.max_vote_id AND DATE_FORMAT(cv1.date, '%Y-%m-%d') = cv2.date WHERE cv1.post_id = ? ORDER BY DATE_FORMAT(cv1.date, '%Y-%m-%d')";
-  conn.query(sql, [id], (err, result) => {
-    res.status(200);
-    res.json(result);
+  const sql = `SELECT cv1.vote_id as vote, cv1.post_id, cv1.score_sum, DATE_FORMAT(cv1.date, '%Y-%m-%d') AS date 
+                FROM character_vote cv1 
+                JOIN (
+                  SELECT MAX(vote_id) AS max_vote_id, DATE_FORMAT(date, '%Y-%m-%d') AS date 
+                  FROM character_vote 
+                  WHERE date BETWEEN DATE_SUB(CURDATE(), INTERVAL 6 DAY) AND CURDATE() 
+                  AND post_id = ? 
+                  GROUP BY DATE_FORMAT(date, '%Y-%m-%d') 
+                ) cv2 ON cv1.vote_id = cv2.max_vote_id 
+                AND DATE_FORMAT(cv1.date, '%Y-%m-%d') = cv2.date 
+                WHERE cv1.post_id = ? 
+                ORDER BY DATE_FORMAT(cv1.date, '%Y-%m-%d')`;
+
+  conn.query(sql, [id, id], (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Internal Server Error' });
+    } else {
+      res.status(200).json(result);
+    }
   });
 });
+
 
 
 
