@@ -13,6 +13,15 @@ router.get("/", (req, res) => {
   });
 });
 
+router.get("/password/:id", (req, res) => {
+  const id = req.params.id;
+  const sql = "SELECT user_password FROM character_user WHERE user_id = ?";
+  conn.query(sql, [id], (err, result) => {
+    res.status(200);
+    res.json(result);
+  });
+});
+
 router.get("/join", (req, res) => {
   const sql = "SELECT * FROM character_user INNER JOIN character_avatar ON character_user.avatar_id = character_avatar.avatar_id INNER JOIN character_post ON character_user.user_id = character_post.user_id";
   conn.query(sql, (err, result) => {
