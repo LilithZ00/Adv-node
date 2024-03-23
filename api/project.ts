@@ -6,7 +6,7 @@ import mysql from "mysql";
 export const router = express.Router();
 
 router.get("/", (req, res) => {
-  const sql = "SELECT * FROM character_user INNER JOIN character_avatar ON character_user.avatar_id = character_avatar.avatar_id ";
+  const sql = "SELECT * FROM character_user INNER JOIN character_avatar ON character_user.avatar_id = character_avatar.avatar_id ORDER BY user_id ASC";
   conn.query(sql, (err, result) => {
     res.status(200);
     res.json(result);
