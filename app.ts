@@ -24,7 +24,9 @@ app.use("/project", project);
 app.use("/post", post);
 app.use("/vote", vote);
 app.use("/avatar", avatar);
+
+
 app.use("/upload", upload);
-app.use("/upload", express.static("uploads"));
+app.use("/uploads", express.static("uploads"));
 
 

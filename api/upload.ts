@@ -2,46 +2,52 @@ import express from "express";
 import path from "path";
 import multer from "multer";
 import { initializeApp } from "firebase/app";
-import { getStorage, ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
+import { getStorage, ref, getDownloadURL, uploadBytesResumable } from "firebase/storage"
 
+// create router of this API
 export const router = express.Router();
 
-//ขึ้นไฟล์เบส
- const firebaseConfig = {
-  apiKey: "AIzaSyCw4ID4d_Y0DtImZLph5vFAUVLnr5Df4HQ",
-  authDomain: "adv-web-37463.firebaseapp.com",
-  projectId: "adv-web-37463",
-  storageBucket: "adv-web-37463.appspot.com",
-  messagingSenderId: "731879842400",
-  appId: "1:731879842400:web:a4458393e0cc55af639905",
-  measurementId: "G-K2H9XV7QMX"
+// /upload
+router.get("/", (req, res) => {
+    res.send("Method GET in upload.ts");
+});
+
+const firebaseConfig = {
+    apiKey: "AIzaSyCrEjJ0EUaGa3f_paXq3cfak9-jL-BeUPo",
+    authDomain: "adv-web-2d6c1.firebaseapp.com",
+    projectId: "adv-web-2d6c1",
+    storageBucket: "adv-web-2d6c1.appspot.com",
+    messagingSenderId: "61142738176",
+    appId: "1:61142738176:web:05b356135528b60f563fe5",
+    measurementId: "G-J6EQBT2YP6"
 };
 
+initializeApp(firebaseConfig);
+const storage = getStorage();
 
-  initializeApp(firebaseConfig);
-
-
-  const storage = getStorage();
-
-  class FileMiddleware {
+class FileMiddleware {
     filename = "";
+    // create malter object to save file in disk
     public readonly diskLoader = multer({
-      storage: multer.memoryStorage(),
-      limits: {
-        fileSize: 67108864, // 64 MByte
-      },
+        // diskStorage = save to be saved
+        storage: multer.memoryStorage(),
+
+        limits: {
+            fileSize: 67108864, // 64 MByte
+        },
     });
-  }
+}
 
-  const fieldUpload =new FileMiddleware();
+const fileUpload = new FileMiddleware();
 
-  router.post("/", fieldUpload.diskLoader.single("file"), async (req, res)=>{
-    const filename = + Math.round(Math.random() * 10000) + "png";
+router.post("/", fileUpload.diskLoader.single("file"), async (req, res) => {
+    const filename = Math.round(Math.random() * 10000) + ".png";
     const storageRef = ref(storage, "images/" + filename);
-    const metadata = {contentType : req.file!.mimetype}
+    const metdata = {
+        contentType: req.file!.mimetype
+    }
     // upload to storage
-    const snapshot = await uploadBytesResumable(storageRef, req.file!.buffer, metadata);
-
+    const snapshot = await uploadBytesResumable(storageRef, req.file!.buffer, metdata);
     const downloadUrl = await getDownloadURL(snapshot.ref);
     res.status(200).json(
         {
