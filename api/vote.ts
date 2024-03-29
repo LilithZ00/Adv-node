@@ -75,15 +75,20 @@ router.post("/insert_vote", (req, res) => {
 //delete
 router.delete("/delete_vote/:id", (req, res) => {
   const id = +req.params.id;
-  let sql = "delete from character_vote where vote_id = ?";
+  let sql = "DELETE FROM character_vote WHERE post_id = ?";
   conn.query(sql, [id], (err, result) => {
-    if (err) throw err;
-    res.status(201).json({
-      affected_row: result.affectedRows,
-      last_idx: result.DeleteId,
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+
+    res.status(200).json({
+      affected_rows: result.affectedRows,
+      changed_rows: result.changedRows,
     });
   });
 });
+
 
 router.put("/update/:id", async (req, res) => {
   const id = +req.params.id;
