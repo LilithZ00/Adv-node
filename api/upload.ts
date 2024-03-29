@@ -18,7 +18,7 @@ const firebaseConfig = {
     projectId: "adv-web-2d6c1",
     storageBucket: "adv-web-2d6c1.appspot.com",
     messagingSenderId: "61142738176",
-    appId: "1:61142738176:web:05b356135528b60f563fe5"
+    appId: "1:61142738176:web:05b356135528b60f563fe5",
     measurementId: "G-J6EQBT2YP6"
 };
 
@@ -55,3 +55,22 @@ router.post("/", fileUpload.diskLoader.single("file"), async (req, res) => {
         }
     );
 });
+
+// router.post("/", fileUpload.diskLoader.single("file"), async (req, res) => {
+//     try {
+//         // Generate a random filename
+//         // const filename = Math.round(Math.random() * 10000) + ".png";
+//         const storageRef = ref(storage, "images/");
+//         const metadata = {
+//             contentType: req.file!.mimetype
+//         };
+//         // Upload to storage
+//         const snapshot = await uploadBytesResumable(storageRef, req.file!.buffer, metadata);
+//         const downloadUrl = await getDownloadURL(snapshot.ref);
+//         // Send only the download URL back in the response
+//         res.status(200).json({ url: downloadUrl });
+//     } catch (error) {
+//         console.error("Error uploading file:", error);
+//         res.status(500).json({ error: "Failed to upload file" });
+//     }
+// });

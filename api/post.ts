@@ -43,6 +43,8 @@ router.get("/score10", (req, res) => {
   });
 });
 
+//10เมื่อวันกับ10วันนี้
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 router.get("/scoreCheck", (req, res) => {
   const sql = "(SELECT character_vote.*, character_post.* FROM character_vote INNER JOIN character_post ON character_vote.post_id = character_post.post_id INNER JOIN ( SELECT post_id, MAX(vote_id) AS latest_vote_id FROM character_vote WHERE DATE(character_vote.date) = CURDATE() GROUP BY post_id ) AS latest_votes ON character_vote.post_id = latest_votes.post_id AND character_vote.vote_id = latest_votes.latest_vote_id ORDER BY character_vote.score_sum DESC LIMIT 10) UNION (SELECT character_vote.*, character_post.* FROM character_vote INNER JOIN character_post ON character_vote.post_id = character_post.post_id INNER JOIN ( SELECT post_id, MAX(vote_id) AS latest_vote_id FROM character_vote WHERE DATE(character_vote.date) = DATE_SUB(CURDATE(), INTERVAL 1 DAY) GROUP BY post_id ) AS latest_votes ON character_vote.post_id = latest_votes.post_id AND character_vote.vote_id = latest_votes.latest_vote_id ORDER BY character_vote.score_sum DESC LIMIT 10)";
   conn.query(sql, (err, result) => {
@@ -50,7 +52,7 @@ router.get("/scoreCheck", (req, res) => {
     res.json(result);
   });
 });
-
+//เเรงค์ทั้งหมด
 router.get("/difference", (req, res) => {
   const sql = "SELECT today.post_id,today.post_caption,today.today_score_sum,today.today_rank,yesterday.yesterday_score_sum,yesterday.yesterday_rank,(CAST(yesterday.yesterday_rank AS SIGNED) - CAST(today.today_rank AS SIGNED)) AS rank_difference FROM (SELECT CV.post_id,CP.post_caption,CV.score_sum AS today_score_sum,RANK() OVER (ORDER BY CV.score_sum DESC) AS today_rank FROM character_vote AS CV INNER JOIN character_post AS CP ON CV.post_id = CP.post_id INNER JOIN (SELECT post_id,MAX(vote_id) AS latest_vote_id FROM character_vote WHERE DATE(date) = CURDATE() GROUP BY post_id) AS latest_votes ON CV.post_id = latest_votes.post_id AND CV.vote_id = latest_votes.latest_vote_id) AS today LEFT JOIN (SELECT CV.post_id,CP.post_caption,CV.score_sum AS yesterday_score_sum,RANK() OVER (ORDER BY CV.score_sum DESC) AS yesterday_rank FROM character_vote AS CV INNER JOIN character_post AS CP ON CV.post_id = CP.post_id INNER JOIN (SELECT post_id,MAX(vote_id) AS latest_vote_id FROM character_vote WHERE DATE(date) = DATE_SUB(CURDATE(), INTERVAL 1 DAY) GROUP BY post_id) AS latest_votes ON CV.post_id = latest_votes.post_id AND CV.vote_id = latest_votes.latest_vote_id) AS yesterday ON today.post_id = yesterday.post_id ORDER BY today.today_rank;";
   conn.query(sql, (err, result) => {
@@ -58,7 +60,7 @@ router.get("/difference", (req, res) => {
     res.json(result);
   });
 });
-
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // SELECT * 
 // FROM character_post
 // INNER JOIN character_user on character_post.user_id = character_user.user_id
